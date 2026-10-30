@@ -228,7 +228,8 @@ func _build_lobby() -> void:
 func _row(cells: Array, me := false) -> HBoxContainer:
 	var r := HBoxContainer.new()
 	for i in cells.size():
-		var l := Label.new(); l.text = str(cells[i])
+		var v = cells[i]
+		var l := Label.new(); l.text = str(int(v)) if v is float and v == floorf(v) else str(v)
 		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL if i == 1 else Control.SIZE_SHRINK_BEGIN
 		l.custom_minimum_size.x = 0 if i == 1 else 46
 		l.add_theme_font_size_override("font_size", 15)

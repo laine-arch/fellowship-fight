@@ -7,3 +7,4 @@ server/node_modules/
 server/data/
 # OS
 .DS_Store
+build/

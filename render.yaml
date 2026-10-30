@@ -1,0 +1,17 @@
+# Render Blueprint for the lobby server (https://render.com/docs/blueprint-spec).
+# In Render: New → Blueprint → pick this repo. Then set DATABASE_URL (e.g. from Supabase) for a lasting scoreboard.
+services:
+  - type: web
+    name: fellowship-fight-lobby
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        sync: false
