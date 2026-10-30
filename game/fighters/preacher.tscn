@@ -4237,10 +4237,10 @@ z_index = 2
 position = Vector2(0, -72)
 
 [node name="Face" type="Sprite2D" parent="Body/Torso/Head"]
-scale = Vector2(0.288, 0.288)
+scale = Vector2(0.237179, 0.237179)
 texture = ExtResource("6_cujj1")
 centered = false
-offset = Vector2(-81, -239)
+offset = Vector2(-192, -299)
 
 [node name="ArmB" type="Node2D" parent="Body/Torso"]
 z_index = -3

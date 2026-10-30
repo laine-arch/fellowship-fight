@@ -17,7 +17,7 @@ func _init() -> void:
 	main.nick_edit.text = "Tester"
 	main._go_cpu()
 	await wait(0.3)
-	main.sel.me = "bubbles"; main._render_select()
+	main.sel.me = "preacher"; main._render_select()
 	await shot("select")
 	main._on_ready()
 	await wait(1.2)

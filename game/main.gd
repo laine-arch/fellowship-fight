@@ -336,7 +336,7 @@ func _build_select() -> void:
 	grid = GridContainer.new(); grid.columns = 4; grid.add_theme_constant_override("h_separation", 10); v.add_child(grid)
 	for c in Chars.LIST:
 		var b := TextureButton.new(); b.custom_minimum_size = Vector2(150, 150)
-		b.texture_normal = Chars.head(c.id); b.ignore_texture_size = true; b.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		b.texture_normal = Chars.portrait(c.id); b.ignore_texture_size = true; b.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_COVERED
 		var holder := PanelContainer.new()
 		var sb := StyleBoxFlat.new(); sb.bg_color = Color(0.42, 0.17, 0.71); sb.set_border_width_all(4); sb.border_color = Color(0.91, 0.89, 0.95)
 		holder.add_theme_stylebox_override("panel", sb); holder.set_meta("id", c.id); holder.set_meta("sb", sb)

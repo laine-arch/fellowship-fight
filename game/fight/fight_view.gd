@@ -50,7 +50,7 @@ func setup(game: Dictionary, player_names: Array, me: int) -> void:
 		var r: Node2D = Chars.rig(F.c).instantiate()
 		add_child(r)
 		rigs.append(r)
-		heads.append(Chars.head(F.c)); busts.append(Chars.bust(F.c))
+		heads.append(Chars.portrait(F.c)); busts.append(Chars.bust(F.c))
 	above = Node2D.new(); above.z_index = 10; add_child(above); above.draw.connect(_draw_above)
 	cam = Camera2D.new()
 	cam.position = Vector2(W / 2, H / 2)
@@ -235,13 +235,9 @@ func _draw_hud() -> void:
 		hud.draw_rect(Rect2(px - 3, py - 3, ps + 6, ps + 6), INK)
 		hud.draw_rect(Rect2(px, py, ps, ps), Color(0.42, 0.17, 0.71))
 		var ht: Texture2D = heads[i]
-		var hk := ps * 1.18 / ht.get_height()
-		var sw := minf(ht.get_width(), ps / hk)
-		var src := Rect2(ht.get_width() / 2.0 - sw / 2, 0, sw, (ps - 2) / hk)
-		var dw2 := sw * hk
-		# player 2 faces left: mirror around the portrait's centre
+		# player 2 faces left: mirror the portrait
 		hud.draw_set_transform(Vector2(px + ps / 2, 0), 0, Vector2(-1 if i else 1, 1))
-		hud.draw_texture_rect_region(ht, Rect2(-dw2 / 2, py + 2, dw2, ps - 2), src)
+		hud.draw_texture_rect(ht, Rect2(-ps / 2, py, ps, ps), false)
 		hud.draw_set_transform(Vector2.ZERO)
 		var nm: String = (names[i] if names[i] != "" else Chars.get_char(F.c).name) + (" (you)" if i == my_idx else "")
 		_text(nm, Vector2(px - 10 - 300 if i else px + ps + 10, py + 26), 24, Color(0.83, 0.94, 1), HORIZONTAL_ALIGNMENT_RIGHT if i else HORIZONTAL_ALIGNMENT_LEFT, 300 if i else -1, 6)

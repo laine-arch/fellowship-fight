@@ -79,8 +79,13 @@ The game itself is hosted on **GitHub Pages** by the workflow in `.github/workfl
 3. Add the fighter to `Sim.CHARS` (stats) and `Chars.LIST` (name, tag line, super name).
 4. Rebuild rigs: `godot --headless --path game -s res://tools/build_fighters.gd`.
 
-Better art (a painted head and separate body parts from an artist or an AI art tool) drops
-straight into `game/art/fighters/<id>/` with the same file names.
+**Painted style (the target look):** from one painted illustration of the fighter, run
+`python3 tools/art/painted_fighter.py <id>` after adding a `SPEC` entry with coordinates on that
+image: the head, a close-up for the portrait, and a strip along the upper arm, forearm, thigh and
+shin, the fist and the shirt. It cuts those pieces out of the painting and fits them onto the rig.
+Best source image: full body in a side-on fighting stance facing either way, plain background,
+no text or logos, plus a head-and-shoulders close-up (a "character sheet" with separate limbs is
+even better).
 
 ### Adding a stage
 

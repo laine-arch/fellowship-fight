@@ -22,6 +22,11 @@ static func head(id: String) -> Texture2D:
 	return load("res://art/fighters/%s/head.webp" % id)
 
 
+## Square portrait for the select screen and HUD.
+static func portrait(id: String) -> Texture2D:
+	return load("res://art/fighters/%s/portrait.webp" % id)
+
+
 static func bust(id: String) -> Texture2D:
 	return load("res://art/fighters/%s/bust.webp" % id)
 
