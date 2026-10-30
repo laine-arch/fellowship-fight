@@ -16,6 +16,9 @@ var _ws := WebSocketPeer.new()
 var _want := false
 var _retry_at := 0.0
 var _backoff := 1.0
+## Test hook: hold outgoing messages this long (simulates a slow connection).
+var debug_delay_ms := 0
+var _outbox: Array = []
 
 
 func open(server_url: String, name: String, lobby_name: String, id: String) -> void:
@@ -38,7 +41,10 @@ func _connect() -> void:
 
 
 func send(msg: Dictionary) -> void:
-	if is_open: _ws.send_text(JSON.stringify(msg, "", false, true))
+	if not is_open: return
+	var text := JSON.stringify(msg, "", false, true)
+	if debug_delay_ms > 0: _outbox.append([Time.get_ticks_msec() + debug_delay_ms + randi() % 20, text])
+	else: _ws.send_text(text)
 
 
 func _process(_dt: float) -> void:
@@ -50,6 +56,8 @@ func _process(_dt: float) -> void:
 				is_open = true; _backoff = 1.0
 				send({"t": "hello", "name": nickname, "id": client_id, "lobby": lobby})
 				connected.emit()
+			while _outbox.size() and _outbox[0][0] <= Time.get_ticks_msec():
+				_ws.send_text(_outbox.pop_front()[1])
 			while _ws.get_available_packet_count() > 0:
 				var data = JSON.parse_string(_ws.get_packet().get_string_from_utf8())
 				if data is Dictionary and data.has("t"): message.emit(data)

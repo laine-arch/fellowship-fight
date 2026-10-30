@@ -52,6 +52,22 @@ test('pairs two queued players, relays inputs, starts and records a match', asyn
   await s.close();
 });
 
+test('a result sent after the opponent left still counts', async () => {
+  const s = await createServer({ scoresFile: path.join(os.tmpdir(), `ff-scores-${Date.now()}-3.json`), log: () => {} });
+  const a = client(s.port), b = client(s.port); await Promise.all([a.open, b.open]);
+  a.send({ t: 'hello', name: 'A' }); b.send({ t: 'hello', name: 'B' });
+  a.send({ t: 'queue' }); b.send({ t: 'queue' });
+  const ma = await a.next('match'); await b.next('match');
+  const [W, L] = ma.side === 0 ? [a, b] : [b, a];
+  W.send({ t: 'result', won: true, a: 3, b: 2 }); W.send({ t: 'leave' });
+  await new Promise(r => setTimeout(r, 200));
+  L.send({ t: 'result', won: false, a: 2, b: 3 });
+  await new Promise(r => setTimeout(r, 300));
+  const rows = await (await fetch(`http://localhost:${s.port}/scores`)).json();
+  assert.equal(rows.length, 2); assert.equal(rows[0].w, 1);
+  a.ws.close(); b.ws.close(); await s.close();
+});
+
 test('disagreeing results are not recorded', async () => {
   const s = await createServer({ scoresFile: path.join(os.tmpdir(), `ff-scores-${Date.now()}-2.json`), log: () => {} });
   const a = client(s.port), b = client(s.port); await Promise.all([a.open, b.open]);

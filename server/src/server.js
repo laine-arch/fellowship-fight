@@ -46,7 +46,7 @@ export async function createServer({ port = 0, databaseUrl, scoresFile, log = co
     if (m.over) return; m.over = true;
     for (const p of m.players) {
       if (p.match !== m) continue;
-      p.match = null; p.state = 'idle';
+      p.match = null; p.lastMatch = m; p.state = 'idle';
       const o = m.players.find(q => q !== p);
       if (reason === 'left' && o) send(p, { t: 'oppLeft' });
       touch(p.lobby);
@@ -60,7 +60,7 @@ export async function createServer({ port = 0, databaseUrl, scoresFile, log = co
       const a = q[i], b = q[i + 1];
       l.queue.delete(a); l.queue.delete(b);
       const m = { id: nextMatch++, players: [a, b], picks: [null, null], ready: [false, false], ep: 0, results: [null, null], rematch: [false, false], over: false };
-      a.match = m; b.match = m; a.side = 0; b.side = 1; a.state = 'play'; b.state = 'play';
+      a.match = m; b.match = m; a.lastMatch = null; b.lastMatch = null; a.side = 0; b.side = 1; a.state = 'play'; b.state = 'play';
       send(a, { t: 'match', id: m.id, side: 0, opp: b.name });
       send(b, { t: 'match', id: m.id, side: 1, opp: a.name });
       touch(l);
@@ -101,6 +101,12 @@ export async function createServer({ port = 0, databaseUrl, scoresFile, log = co
         case 'queue': if (p.lobby && !m) { p.state = 'q'; p.lobby.queue.add(p); touch(p.lobby); } return;
         case 'unqueue': if (p.lobby) { p.lobby.queue.delete(p); if (!m) p.state = 'idle'; touch(p.lobby); } return;
         case 'leave': if (m) { endMatch(m, 'left'); } return;
+        case 'result': {
+          // still accepted after the match closed (the other player may already have left)
+          const rm = m || p.lastMatch;
+          if (rm && rm.players[p.side] === p) { rm.results[p.side] = { won: !!msg.won, a: msg.a | 0, b: msg.b | 0 }; settle(rm); }
+          return;
+        }
       }
       if (!m || m.over) return;
       const o = m.players[1 - p.side];
@@ -118,9 +124,6 @@ export async function createServer({ port = 0, databaseUrl, scoresFile, log = co
         }
         case 'in': // rollback inputs: pass straight through to the opponent
           send(o, msg); return;
-        case 'result':
-          m.results[p.side] = { won: !!msg.won, a: msg.a | 0, b: msg.b | 0 };
-          settle(m); return;
         case 'rematch':
           m.rematch[p.side] = true;
           if (m.rematch[0] && m.rematch[1]) { m.rematch = [false, false]; m.ep++; m.ready = [false, false]; send(m.players[0], { t: 'rematch', ep: m.ep }); send(m.players[1], { t: 'rematch', ep: m.ep }); }
