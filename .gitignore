@@ -8,3 +8,4 @@ server/data/
 # OS
 .DS_Store
 build/
+__pycache__/
