@@ -1,0 +1,6 @@
+; Engine configuration file.
+config_version=5
+
+[application]
+config/name="Fellowship Fighter"
+config/features=PackedStringArray("4.4", "Mobile")

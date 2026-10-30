@@ -1,0 +1,9 @@
+# Godot
+game/.godot/
+game/export/
+*.import.tmp
+# Node
+server/node_modules/
+server/data/
+# OS
+.DS_Store
